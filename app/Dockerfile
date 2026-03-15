@@ -1,5 +1,5 @@
 # ===== STAGE 1: What base image to use =====
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 # ===== STAGE 2: Who is maintaining this =====
 LABEL maintainer="ananthu@example.com"
