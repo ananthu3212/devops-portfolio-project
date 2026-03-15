@@ -56,7 +56,7 @@ jobs:
       - name: Test Docker container
         run: |
           # Run container in background
-          docker run -d -p 8080:5000 --name test-container devops-portfolio:latest
+          docker run -d -p 8080:8080 --name test-container devops-portfolio:latest
           # Wait for app to start
           sleep 5
           # Test the health endpoint
