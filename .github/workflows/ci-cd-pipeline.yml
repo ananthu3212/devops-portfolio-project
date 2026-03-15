@@ -1,0 +1,97 @@
+# Name of your workflow
+name: CI/CD Pipeline for DevOps Portfolio
+
+# WHEN to run this workflow
+on:
+  push:
+    branches: [ main ]        # Run on pushes to main branch
+  pull_request:
+    branches: [ main ]        # Run on pull requests to main branch
+
+# WHAT jobs to run
+jobs:
+  # JOB 1: Test and Build
+  build-and-test:
+    runs-on: ubuntu-latest    # Use Ubuntu virtual machine
+
+    steps:
+      # Step 1: Check out the code from GitHub
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          cd app
+          pip install -r requirements.txt
+          pip install pytest  # For testing
+
+      # Step 4: Run tests (simple test)
+      - name: Run basic test
+        run: |
+          cd app
+          python -c "import flask; print('Flask version:', flask.__version__)"
+
+      # Step 5: Set up Docker Buildx (for building images)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Step 6: Build Docker image (don't push yet)
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./app
+          file: ./app/Dockerfile
+          push: false
+          tags: devops-portfolio:latest
+          load: true          # Load image into local Docker
+
+      # Step 7: Test the Docker container
+      - name: Test Docker container
+        run: |
+          # Run container in background
+          docker run -d -p 8080:5000 --name test-container devops-portfolio:latest
+          # Wait for app to start
+          sleep 5
+          # Test the health endpoint
+          curl -f http://localhost:8080/health || exit 1
+          # Clean up
+          docker stop test-container
+          docker rm test-container
+
+      # Step 8: Security scan with Trivy
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'devops-portfolio:latest'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+
+  # JOB 2: Deploy (only runs after build passes AND on main branch)
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # In a real project, you'd push to a container registry here
+      # For now, we'll just simulate deployment
+      - name: Simulate deployment
+        run: |
+          echo "✅ Build passed! Ready to deploy."
+          echo "📦 Image: devops-portfolio:latest"
+          echo "🚀 In production, this would push to AWS ECR/DockerHub"
