@@ -1,0 +1,68 @@
+# ===== TERRAFORM =====
+# Local .terraform directories
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+terraform.tfstate
+terraform.tfstate.backup
+crash.log
+crash.*.log
+
+# Exclude all .tfvars files (contain sensitive data)
+*.tfvars
+*.tfvars.json
+
+# Ignore override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc
+
+# ===== ENVIRONMENT VARIABLES =====
+# NEVER commit these - they contain secrets!
+.env
+*.env
+.env.*
+
+# ===== AWS CREDENTIALS =====
+# SSH keys and AWS secrets
+*.pem
+*.p12
+aws-credentials.txt
+
+# ===== PYTHON =====
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# ===== IDE =====
+# IDE directories
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ===== LOGS =====
+*.log
+logs/
+
+# ===== DOCKER =====
+# Docker environment files
+docker-compose.override.yml
